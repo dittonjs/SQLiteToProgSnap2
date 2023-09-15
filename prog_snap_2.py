@@ -1,5 +1,5 @@
 from typing import Optional
-
+import csv
 
 class ProgSnap2:
     def __init__(
@@ -34,23 +34,23 @@ class ProgSnap2:
         self.tool_instances = tool_instances
         self.code_state_id = code_state_id
 
-    def to_csv_row(self) -> str:
-        return (
-            ","
-            f"{self.event_id},"
-            f"{self.subject_id},"
-            f"{self.assignment_id},"
-            f"{self.code_state_section},"
-            f"{self.event_type},"
-            f"{self.source_location},"
-            f"{self.edit_type},"
-            f"{self.insert_text},"
-            f"{self.delete_text},"
-            f"{self.metadata},"
-            f"{self.client_timestamp},"
-            f"{self.code_state_id}"
+    def write_row(self, writer):
+        writer.writerow((
+            "",
+            str(self.event_id),
+            self.subject_id,
+            self.assignment_id,
+            self.code_state_section,
+            self.event_type,
+            str(self.source_location) if self.source_location else '',
+            self.edit_type,
+            self.insert_text,
+            self.delete_text,
+            self.metadata,
+            self.client_timestamp,
+            self.code_state_id,
             "\n"
-        )
+        ))
 
     @staticmethod
     def from_edit(edit):
@@ -78,7 +78,7 @@ class ProgSnap2:
             event_id=action[0],
             subject_id="student",
             assignment_id="",
-            code_state_section="" if not action[4] else files[action[4]],
+            code_state_section="" if not action[4] else files[action[4]][2],
             event_type=action[2],
             source_location=None,
             edit_type="",
@@ -100,7 +100,7 @@ class ProgSnap2:
             event_id=execution[0],
             subject_id="student",
             assignment_id="",
-            code_state_section=files[execution[7]],
+            code_state_section=files[execution[7]][2],
             event_type="Run.Program",
             source_location=None,
             edit_type="",
@@ -136,6 +136,8 @@ class ProgSnap2Execution(ProgSnap2):
             code_state_id=""
         )
 
-    def to_csv_row(self) -> str:
-        return super().to_csv_row() + self.finish_event.to_csv_row()
+    def write_row(self, writer):
+        super().write_row(writer)
+        self.finish_event.write_row(writer)
+
 

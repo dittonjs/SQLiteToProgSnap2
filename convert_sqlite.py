@@ -1,3 +1,4 @@
+import csv
 import sqlite3
 from prog_snap_2 import ProgSnap2
 
@@ -20,10 +21,7 @@ def read_project_files_to_dict(connection: sqlite3.Connection):
 def convert_sqlite(db_filepath: str, out_filepath: str = "progsnap2.csv"):
     with (sqlite3.connect(db_filepath) as connection):
         try:
-            # test if file exists
-            f = open(out_filepath, 'x')
-            f.close()
-            with open(out_filepath, 'a') as outfile:
+            with open(out_filepath, 'w', newline="") as outfile:
                 files = read_project_files_to_dict(connection)
 
                 # get events from database
@@ -40,13 +38,29 @@ def convert_sqlite(db_filepath: str, out_filepath: str = "progsnap2.csv"):
 
                 prog_snap_2s.sort(key=lambda x: x.client_timestamp)
 
-                # write header line
-                outfile.write(",EventID,SubjectID,AssignmentID,CodeStateSection,EventType,SourceLocation,EditType,"
-                              "InsertText,DeleteText,X-Metadata,ClientTimestamp,ToolInstances,CodeStateID\n")
+                writer = csv.writer(outfile, dialect=csv.unix_dialect)
+
+                writer.writerow([
+                    '',
+                    'EventID',
+                    'SubjectID',
+                    'AssignmentID',
+                    'CodeStateSection',
+                    'EventType',
+                    'SourceLocation',
+                    'EditType',
+                    "InsertText",
+                    "DeleteText",
+                    "X-Metadata",
+                    "ClientTimestamp",
+                    "ToolInstances",
+                    "CodeStateID"
+                ])
 
                 # write other events
+
                 for ps2 in prog_snap_2s:
-                    outfile.write(ps2.to_csv_row())
+                    ps2.write_row(writer)
 
         except FileExistsError:
             print(f"Outfile {out_filepath} already exists. Move it or deleted before running the script.")
