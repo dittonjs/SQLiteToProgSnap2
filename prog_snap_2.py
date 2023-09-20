@@ -49,7 +49,6 @@ class ProgSnap2:
             self.metadata,
             self.client_timestamp,
             self.code_state_id,
-            "\n"
         ))
 
     @staticmethod

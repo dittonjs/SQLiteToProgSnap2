@@ -38,7 +38,7 @@ def convert_sqlite(db_filepath: str, out_filepath: str = "progsnap2.csv"):
 
                 prog_snap_2s.sort(key=lambda x: x.client_timestamp)
 
-                writer = csv.writer(outfile, dialect=csv.unix_dialect)
+                writer = csv.writer(outfile)
 
                 writer.writerow([
                     '',
