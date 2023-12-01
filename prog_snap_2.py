@@ -1,6 +1,7 @@
 from typing import Optional
 import csv
 
+
 class ProgSnap2:
     def __init__(
             self,
@@ -138,5 +139,3 @@ class ProgSnap2Execution(ProgSnap2):
     def write_row(self, writer):
         super().write_row(writer)
         self.finish_event.write_row(writer)
-
-

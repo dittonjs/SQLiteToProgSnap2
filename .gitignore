@@ -1,4 +1,5 @@
-_showyourwork.sqlite
+*.sqlite
 test.csv
 progsnap2.csv
 venv
+*.zip
