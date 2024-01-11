@@ -19,6 +19,7 @@ class ProgSnap2:
             client_timestamp: int,
             tool_instances: str,
             code_state_id: str,
+            user_action_id: str,
     ):
         self.raw_event = raw_event
         self.event_id = event_id
@@ -34,6 +35,7 @@ class ProgSnap2:
         self.client_timestamp = client_timestamp
         self.tool_instances = tool_instances
         self.code_state_id = code_state_id
+        self.user_action_id = user_action_id
 
     def write_row(self, writer):
         writer.writerow((
@@ -50,44 +52,47 @@ class ProgSnap2:
             self.metadata,
             self.client_timestamp,
             self.code_state_id,
+            self.user_action_id,
         ))
 
     @staticmethod
-    def from_edit(edit):
+    def from_edit(edit, files, assignment_id="assignment_0", student_name="student", ):
         return ProgSnap2(
             raw_event=edit,
             event_id=edit[0],
-            subject_id="student",
-            assignment_id="",
-            code_state_section=edit[5],
+            subject_id=student_name,
+            assignment_id=assignment_id,
+            code_state_section=files[edit[5]][1],
             event_type="File.Edit",
             source_location=edit[3],
-            edit_type=edit[7],
+            edit_type="",
             insert_text=edit[1],
             delete_text=edit[2],
-            metadata=f"reverted: {edit[8]}",
+            metadata=f"reverted: {edit[7]}",
             client_timestamp=edit[4],
-            tool_instances=edit[6],
-            code_state_id=""
+            tool_instances="",
+            code_state_id="",
+            user_action_id=edit[6]
         )
 
     @staticmethod
-    def from_action(action, files):
+    def from_action(action, files, assignment_id="assignment_0", student_name="student"):
         return ProgSnap2(
             raw_event=action,
             event_id=action[0],
-            subject_id="student",
-            assignment_id="",
-            code_state_section="" if not action[4] else files[action[4]][2],
-            event_type=action[2],
-            source_location=None,
-            edit_type="",
+            subject_id=student_name,
+            assignment_id=assignment_id,
+            code_state_section="",
+            event_type="X-UserAction",
+            source_location=-1,
+            edit_type=action[2],
             insert_text="",
             delete_text="",
             metadata=action[3],
             client_timestamp=action[1],
             tool_instances="",
-            code_state_id=""
+            code_state_id="",
+            user_action_id=action[0]
         )
 
     # ,EventID,SubjectID,AssignmentID,CodeStateSection,EventType,SourceLocation,EditType,InsertText,DeleteText,X-Metadata,ClientTimestamp,ToolInstances,CodeStateID
