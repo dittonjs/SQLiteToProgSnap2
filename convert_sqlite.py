@@ -71,76 +71,50 @@ def get_files_with_disordered_events(connection, files):
     return report
 
 
-def convert_sqlite(db_filepath: str, out_filepath: str = "progsnap2.csv", assignment_name="assignment_0", student_name="student"):
+def convert_sqlite(db_filepath: str, writer, assignment_name="assignment_0", student_name="student"):
     # has_issues = False
     with (sqlite3.connect(db_filepath) as connection):
         # get events from database
-        try:
-            files = read_project_files_to_dict(connection)
-            print(files)
-            edits = read_all(connection, "Edits")
-            actions = read_all(connection, "UserActions")
+        files = read_project_files_to_dict(connection)
+        print(files)
+        edits = read_all(connection, "Edits")
+        actions = read_all(connection, "UserActions")
 
-            # executions = read_all(connection, "ProgramExecutions")
+        # executions = read_all(connection, "ProgramExecutions")
 
-            # convert events
-            prog_snap_2s: list[ProgSnap2] = [
-                *[ProgSnap2.from_edit(edit, files, assignment_name, student_name) for edit in edits],
-                *[ProgSnap2.from_action(action, files, assignment_name, student_name) for action in actions],
-                # *[ProgSnap2.from_execution(execution, files) for execution in executions]
-            ]
+        # convert events
+        prog_snap_2s: list[ProgSnap2] = [
+            *[ProgSnap2.from_edit(edit, files, assignment_name, student_name) for edit in edits],
+            *[ProgSnap2.from_action(action, files, assignment_name, student_name) for action in actions],
+            # *[ProgSnap2.from_execution(execution, files) for execution in executions]
+        ]
 
-            prog_snap_2s.sort(key=lambda x: (x.client_timestamp, x.source_location))
+        prog_snap_2s.sort(key=lambda x: (x.client_timestamp, x.source_location))
 
-            with open(out_filepath, 'w', newline="") as outfile:
-                writer = csv.writer(outfile)
+        for file in files.items():
+            print(file)
+            writer.writerow([
+                '',
+                file[1][0],
+                student_name,
+                assignment_name,
+                file[1][1],
+                "X-FileInit",
+                "0",
+                '',
+                file[1][2],
+                "",
+                "",
+                "0",
+                "",
+                "",
+                ""
+            ])
 
-                writer.writerow([
-                    '',
-                    'EventID',
-                    'SubjectID',
-                    'AssignmentID',
-                    'CodeStateSection',
-                    'EventType',
-                    'SourceLocation',
-                    'EditType',
-                    "InsertText",
-                    "DeleteText",
-                    "X-Metadata",
-                    "ClientTimestamp",
-                    "ToolInstances",
-                    "CodeStateID",
-                    "X-UserActionID",
-                ])
+        # write other events
+        for ps2 in prog_snap_2s:
+            ps2.write_row(writer)
 
-                for file in files.items():
-                    print(file)
-                    writer.writerow([
-                        '',
-                        file[1][0],
-                        student_name,
-                        assignment_name,
-                        file[1][1],
-                        "X-FileInit",
-                        "0",
-                        '',
-                        file[1][2],
-                        "",
-                        "",
-                        "0",
-                        "",
-                        "",
-                        ""
-                    ])
-
-
-                # write other events
-
-                for ps2 in prog_snap_2s:
-                    ps2.write_row(writer)
-
-        except FileExistsError:
-            print(f"Outfile {out_filepath} already exists. Move it or deleted before running the script.")
 
     return False # this can be used to track issues but is not currently being used.
 

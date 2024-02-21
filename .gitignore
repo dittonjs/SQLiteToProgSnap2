@@ -4,3 +4,4 @@ progsnap2.csv
 venv
 *.zip
 *_export
+.DS_Store

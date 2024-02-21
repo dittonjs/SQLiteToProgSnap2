@@ -71,7 +71,7 @@ class ProgSnap2:
             metadata=f"reverted: {edit[7]}",
             client_timestamp=edit[4],
             tool_instances="",
-            code_state_id="",
+            code_state_id=files[edit[5]][1],
             user_action_id=edit[6]
         )
 

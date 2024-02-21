@@ -1,3 +1,4 @@
+import csv
 import tempfile
 
 from convert_sqlite import convert_sqlite
@@ -7,18 +8,23 @@ import os
 import pathlib
 
 
-def find_and_export_syw_file(assn_name, folder, outdir, csv_file_name, problem_files):
+def find_and_export_syw_file(
+        assn_name,
+        folder,
+        outdir,
+        submission_file,
+        problem_files,
+        writer
+):
     if os.path.exists(os.path.join(folder, "_showyourwork.sqlite")):
         print(f"found file at {folder}")
         print(assn_name)
-        has_issues = convert_sqlite(os.path.join(folder, "_showyourwork.sqlite"), os.path.join(outdir, csv_file_name + ".csv"), assn_name, csv_file_name.split("_")[0])
-        if has_issues:
-            problem_files.append(csv_file_name)
+        convert_sqlite(os.path.join(folder, "_showyourwork.sqlite"), writer, assn_name, submission_file.split("_")[0])
         return True
 
     for item in os.listdir(folder):
         if os.path.isdir(os.path.join(folder, item)):
-            found = find_and_export_syw_file(assn_name, os.path.join(folder, item), outdir, csv_file_name, problem_files)
+            found = find_and_export_syw_file(assn_name, os.path.join(folder, item), outdir, submission_file, problem_files, writer)
             if found:
                 return True
 
@@ -35,22 +41,43 @@ if __name__ == "__main__":
             submission_zip_ref.extractall(tempdir)
             print("EXTRACTED SUBMISSIONS")
             problem_files = []
-            for submission_file in os.listdir(tempdir):
-                print(f"EXTRACTING {submission_file}")
-                print("============================================")
-                with ZipFile(os.path.join(tempdir, submission_file), 'r') as student_zip:
-                    student_zip_path = os.path.join(tempdir, submission_file.replace(".zip", ""))
-                    student_zip.extractall(student_zip_path)
+            with open(os.path.join(outdir, "export.csv"), 'w', newline="") as outfile:
+                for submission_file in os.listdir(tempdir):
+                    print(f"EXTRACTING {submission_file}")
+                    print("============================================")
+                    with ZipFile(os.path.join(tempdir, submission_file), 'r') as student_zip:
+                        student_zip_path = os.path.join(tempdir, submission_file.replace(".zip", ""))
+                        student_zip.extractall(student_zip_path)
 
-                    find_and_export_syw_file(
-                        assignment_name,
-                        student_zip_path,
-                        outdir,
-                        submission_file.replace(".zip", ""),
-                        problem_files
-                    )
 
-            print(len(problem_files))
+                        writer = csv.writer(outfile)
+
+                        writer.writerow([
+                            '',
+                            'EventID',
+                            'SubjectID',
+                            'AssignmentID',
+                            'CodeStateSection',
+                            'EventType',
+                            'SourceLocation',
+                            'EditType',
+                            "InsertText",
+                            "DeleteText",
+                            "X-Metadata",
+                            "ClientTimestamp",
+                            "ToolInstances",
+                            "CodeStateID",
+                            "X-UserActionID",
+                        ])
+                        find_and_export_syw_file(
+                            assignment_name,
+                            student_zip_path,
+                            outdir,
+                            submission_file.replace(".zip", ""),
+                            problem_files,
+                            writer
+                        )
+
 
 
 
