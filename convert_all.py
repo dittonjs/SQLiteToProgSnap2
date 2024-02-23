@@ -35,16 +35,19 @@ if __name__ == "__main__":
             for submission_file in os.listdir(tempdir):
                 print(f"EXTRACTING {submission_file}")
                 print("============================================")
-                with ZipFile(os.path.join(tempdir, submission_file), 'r') as student_zip:
-                    student_zip_path = os.path.join(tempdir, submission_file.replace(".zip", ""))
-                    student_zip.extractall(student_zip_path)
+                try:
+                    with ZipFile(os.path.join(tempdir, submission_file), 'r') as student_zip:
+                        student_zip_path = os.path.join(tempdir, submission_file.replace(".zip", ""))
+                        student_zip.extractall(student_zip_path)
 
-                    find_and_export_syw_file(
-                        student_zip_path,
-                        outdir,
-                        submission_file.replace(".zip", ""),
-                        problem_files
-                    )
+                        find_and_export_syw_file(
+                            student_zip_path,
+                            outdir,
+                            submission_file.replace(".zip", ""),
+                            problem_files
+                        )
+                except IsADirectoryError:
+                    print("Skipping...")
 
             print(len(problem_files))
 
