@@ -5,3 +5,5 @@ venv
 *.zip
 *_export
 .DS_Store
+submissions
+export
