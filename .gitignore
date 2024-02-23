@@ -3,3 +3,5 @@ test.csv
 progsnap2.csv
 venv
 *.zip
+submissions
+*export
