@@ -93,12 +93,15 @@ def convert_sqlite(db_filepath: str, writer, assignment_name="assignment_0", stu
 
         for file in files.items():
             #print(file)
+            code_state_section = file[1][1]
+            if len(code_state_section) > 0 and code_state_section[0] == '/':
+                code_state_section = code_state_section[1:]
             writer.writerow([
                 '',
                 file[1][0],
                 student_name,
                 assignment_name,
-                file[1][1],
+                code_state_section,
                 "X-FileInit",
                 "0",
                 '',

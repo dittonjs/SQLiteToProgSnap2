@@ -25,7 +25,8 @@ def find_and_export_syw_file(
     if os.path.exists(os.path.join(folder, "_showyourwork.sqlite")):
 #        print(f"found file at {folder}")
 #        print(assn_name)
-        convert_sqlite(os.path.join(folder, "_showyourwork.sqlite"), writer, assn_name, submission_file.split("_")[0])
+        subject_id = submission_file.split("_")[0]
+        convert_sqlite(os.path.join(folder, "_showyourwork.sqlite"), writer, assn_name, subject_id)
         return True
 
     for item in os.listdir(folder):
@@ -48,6 +49,25 @@ if __name__ == "__main__":
             #print("EXTRACTED SUBMISSIONS")
             problem_files = []
             with open(os.path.join(outdir, "export.csv"), 'w', newline="") as outfile:
+                writer = csv.writer(outfile)
+
+                writer.writerow([
+                    '',
+                    'EventID',
+                    'SubjectID',
+                    'AssignmentID',
+                    'CodeStateSection',
+                    'EventType',
+                    'SourceLocation',
+                    'EditType',
+                    "InsertText",
+                    "DeleteText",
+                    "X-Metadata",
+                    "ClientTimestamp",
+                    "ToolInstances",
+                    "CodeStateID",
+                    "X-UserActionID",
+                ])
                 for submission_file in os.listdir(tempdir):
 
                     try:
@@ -58,25 +78,6 @@ if __name__ == "__main__":
                             student_zip.extractall(student_zip_path)
 
 
-                            writer = csv.writer(outfile)
-
-                            writer.writerow([
-                                '',
-                                'EventID',
-                                'SubjectID',
-                                'AssignmentID',
-                                'CodeStateSection',
-                                'EventType',
-                                'SourceLocation',
-                                'EditType',
-                                "InsertText",
-                                "DeleteText",
-                                "X-Metadata",
-                                "ClientTimestamp",
-                                "ToolInstances",
-                                "CodeStateID",
-                                "X-UserActionID",
-                            ])
                             find_and_export_syw_file(
                                 assignment_name,
                                 student_zip_path,

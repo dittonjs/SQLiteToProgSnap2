@@ -21,6 +21,9 @@ class ProgSnap2:
             code_state_id: str,
             user_action_id: str,
     ):
+        if len(code_state_section) > 0 and code_state_section[0] == '/':
+            code_state_section = code_state_section[1:]
+
         self.raw_event = raw_event
         self.event_id = event_id
         self.subject_id = subject_id
@@ -51,6 +54,7 @@ class ProgSnap2:
             self.delete_text,
             self.metadata,
             self.client_timestamp,
+            self.tool_instances,
             self.code_state_id,
             self.user_action_id,
         ))
