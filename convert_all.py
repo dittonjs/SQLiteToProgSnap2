@@ -8,6 +8,12 @@ import os
 import pathlib
 
 
+#-----------------------------------------------------------
+# Usage:
+# convert_all assignment_name submissions_zip output_dir
+#-----------------------------------------------------------
+
+
 def find_and_export_syw_file(
         assn_name,
         folder,
@@ -17,8 +23,8 @@ def find_and_export_syw_file(
         writer
 ):
     if os.path.exists(os.path.join(folder, "_showyourwork.sqlite")):
-        print(f"found file at {folder}")
-        print(assn_name)
+#        print(f"found file at {folder}")
+#        print(assn_name)
         convert_sqlite(os.path.join(folder, "_showyourwork.sqlite"), writer, assn_name, submission_file.split("_")[0])
         return True
 
@@ -39,14 +45,14 @@ if __name__ == "__main__":
     with ZipFile(submissions_zip,  'r') as submission_zip_ref:
         with tempfile.TemporaryDirectory() as tempdir:
             submission_zip_ref.extractall(tempdir)
-            print("EXTRACTED SUBMISSIONS")
+            #print("EXTRACTED SUBMISSIONS")
             problem_files = []
             with open(os.path.join(outdir, "export.csv"), 'w', newline="") as outfile:
                 for submission_file in os.listdir(tempdir):
 
                     try:
                         print(f"EXTRACTING {submission_file}")
-                        print("============================================")
+                        #print("============================================")
                         with ZipFile(os.path.join(tempdir, submission_file), 'r') as student_zip:
                             student_zip_path = os.path.join(tempdir, submission_file.replace(".zip", ""))
                             student_zip.extractall(student_zip_path)
@@ -81,6 +87,8 @@ if __name__ == "__main__":
                             )
                     except IsADirectoryError:
                         print(f"Skipping folder {submission_file} because it is not a zip folder")
+                    except:
+                        print(f"Failed to extract {submission_file}")
 
 
 

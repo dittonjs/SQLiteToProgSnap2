@@ -76,7 +76,7 @@ def convert_sqlite(db_filepath: str, writer, assignment_name="assignment_0", stu
     with (sqlite3.connect(db_filepath) as connection):
         # get events from database
         files = read_project_files_to_dict(connection)
-        print(files)
+        #print(files)
         edits = read_all(connection, "Edits")
         actions = read_all(connection, "UserActions")
 
@@ -92,7 +92,7 @@ def convert_sqlite(db_filepath: str, writer, assignment_name="assignment_0", stu
         prog_snap_2s.sort(key=lambda x: (x.client_timestamp, x.source_location))
 
         for file in files.items():
-            print(file)
+            #print(file)
             writer.writerow([
                 '',
                 file[1][0],
