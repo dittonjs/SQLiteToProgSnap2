@@ -43,41 +43,44 @@ if __name__ == "__main__":
             problem_files = []
             with open(os.path.join(outdir, "export.csv"), 'w', newline="") as outfile:
                 for submission_file in os.listdir(tempdir):
-                    print(f"EXTRACTING {submission_file}")
-                    print("============================================")
-                    with ZipFile(os.path.join(tempdir, submission_file), 'r') as student_zip:
-                        student_zip_path = os.path.join(tempdir, submission_file.replace(".zip", ""))
-                        student_zip.extractall(student_zip_path)
+
+                    try:
+                        print(f"EXTRACTING {submission_file}")
+                        print("============================================")
+                        with ZipFile(os.path.join(tempdir, submission_file), 'r') as student_zip:
+                            student_zip_path = os.path.join(tempdir, submission_file.replace(".zip", ""))
+                            student_zip.extractall(student_zip_path)
 
 
-                        writer = csv.writer(outfile)
+                            writer = csv.writer(outfile)
 
-                        writer.writerow([
-                            '',
-                            'EventID',
-                            'SubjectID',
-                            'AssignmentID',
-                            'CodeStateSection',
-                            'EventType',
-                            'SourceLocation',
-                            'EditType',
-                            "InsertText",
-                            "DeleteText",
-                            "X-Metadata",
-                            "ClientTimestamp",
-                            "ToolInstances",
-                            "CodeStateID",
-                            "X-UserActionID",
-                        ])
-                        find_and_export_syw_file(
-                            assignment_name,
-                            student_zip_path,
-                            outdir,
-                            submission_file.replace(".zip", ""),
-                            problem_files,
-                            writer
-                        )
-
+                            writer.writerow([
+                                '',
+                                'EventID',
+                                'SubjectID',
+                                'AssignmentID',
+                                'CodeStateSection',
+                                'EventType',
+                                'SourceLocation',
+                                'EditType',
+                                "InsertText",
+                                "DeleteText",
+                                "X-Metadata",
+                                "ClientTimestamp",
+                                "ToolInstances",
+                                "CodeStateID",
+                                "X-UserActionID",
+                            ])
+                            find_and_export_syw_file(
+                                assignment_name,
+                                student_zip_path,
+                                outdir,
+                                submission_file.replace(".zip", ""),
+                                problem_files,
+                                writer
+                            )
+                    except IsADirectoryError:
+                        print(f"Skipping folder {submission_file} because it is not a zip folder")
 
 
 
