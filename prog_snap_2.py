@@ -19,7 +19,7 @@ class ProgSnap2:
             client_timestamp: int,
             tool_instances: str,
             code_state_id: str,
-            user_action_id: str,
+            user_action_id: int,#str,
     ):
         self.raw_event = raw_event
         self.event_id = event_id
@@ -77,7 +77,7 @@ class ProgSnap2:
             client_timestamp=edit[4],
             tool_instances="",
             code_state_id=code_state_section,
-            user_action_id=edit[6]
+            user_action_id=int(edit[6])
         )
 
     @staticmethod
@@ -97,7 +97,7 @@ class ProgSnap2:
             client_timestamp=action[1],
             tool_instances="",
             code_state_id="",
-            user_action_id=action[0]
+            user_action_id=int(action[0])
         )
 
     # ,EventID,SubjectID,AssignmentID,CodeStateSection,EventType,SourceLocation,EditType,InsertText,DeleteText,X-Metadata,ClientTimestamp,ToolInstances,CodeStateID
